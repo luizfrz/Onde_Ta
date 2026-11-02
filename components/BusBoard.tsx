@@ -3,8 +3,9 @@
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { holidayAlerts, type Holiday } from "@/lib/holidays";
-import { activeTrips } from "@/lib/trips";
 import { routes } from "@/lib/routes";
+import { cities, routeCities } from "@/lib/line";
+import RouteModal from "./RouteModal";
 import { countdown, formatCountdown, getNow, nextDeparture, runsToday, toMinutes, type Now } from "@/lib/time";
 
 const BusMap = dynamic(() => import("./BusMap"), {
@@ -14,6 +15,33 @@ const BusMap = dynamic(() => import("./BusMap"), {
 
 const sectionTitle =
   "mt-10 mb-6 text-center text-[1.6rem] font-bold text-ink after:mx-auto after:mt-2.5 after:block after:h-1 after:w-12 after:rounded after:bg-mint after:content-['']";
+
+const HOT_ABOVE = 33;
+
+type Weather = { temp: number; feels: number };
+
+function HeatAlert({ temp }: { temp: number }) {
+  return (
+    <div
+      className="flex items-start gap-3.5 rounded-xl border border-l-[6px] border-red-300 border-l-red-500 bg-gradient-to-r from-red-50 to-orange-50 px-4.5 py-4 shadow-[0_4px_14px_rgba(239,68,68,.15)] dark:border-red-900 dark:border-l-red-500 dark:from-red-950 dark:to-orange-950"
+      role="alert"
+    >
+      <div className="grid size-11 flex-none place-items-center rounded-full bg-red-500 text-2xl text-white" aria-hidden="true">
+        🌡️
+      </div>
+      <div>
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-2">
+          <span className="rounded-full bg-red-500 px-2 py-0.5 text-[.68rem] font-bold tracking-[.08em] text-white uppercase">Calor</span>
+          <strong className="text-[1.05rem] text-red-900 dark:text-red-200">Muito quente: {Math.round(temp)}°C</strong>
+        </div>
+        <p className="mt-1 text-[.88rem] text-red-800 dark:text-red-300">
+          Cuidado com o calor: beba bastante água, evite ficar muito tempo no sol à espera do ônibus e redobre a atenção com
+          crianças, idosos e pessoas com problemas de saúde.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function HolidayAlert({ when, holiday }: { when: "Hoje" | "Amanhã"; holiday: Holiday }) {
   return (
@@ -38,7 +66,7 @@ function HolidayAlert({ when, holiday }: { when: "Hoje" | "Amanhã"; holiday: Ho
           {holiday.optional
             ? "Ponto facultativo: os horários podem ser alterados."
             : "Pode haver mudança nos horários ou ônibus sem circular."}{" "}
-          Confirme com a empresa antes de sair.
+          Confirme com a  empresa antes de sair. 
         </p>
       </div>
     </div>
@@ -47,10 +75,25 @@ function HolidayAlert({ when, holiday }: { when: "Hoje" | "Amanhã"; holiday: Ho
 
 export default function BusBoard() {
   const [now, setNow] = useState<Now | null>(null);
+  const [city, setCity] = useState<string | null>(null);
+  const [weather, setWeather] = useState<Weather | null>(null);
 
   useEffect(() => {
     setNow(getNow());
     const id = setInterval(() => setNow(getNow()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const load = () =>
+      fetch(
+        "https://api.open-meteo.com/v1/forecast?latitude=-3.73&longitude=-38.53&current=temperature_2m,apparent_temperature&timezone=America%2FFortaleza",
+      )
+        .then((r) => r.json())
+        .then((d) => setWeather({ temp: d.current.temperature_2m, feels: d.current.apparent_temperature }))
+        .catch(() => setWeather(null));
+    load();
+    const id = setInterval(load, 10 * 60 * 1000);
     return () => clearInterval(id);
   }, []);
 
@@ -59,7 +102,7 @@ export default function BusBoard() {
   const clock = `${String(Math.floor(now.minutes / 60)).padStart(2, "0")}:${String(now.minutes % 60).padStart(2, "0")}`;
 
   const { today, tomorrow } = holidayAlerts(now);
-  const trips = activeTrips(now);
+  const visible = routes.filter((r) => !city || routeCities(r.fromOffset, r.toOffset).includes(city));
 
   const statusItem = "flex flex-col gap-0.5 p-3 sm:px-5 sm:py-4 not-first:border-l not-first:border-line";
   const statusLabel = "text-[.72rem] tracking-[.08em] text-muted uppercase";
@@ -77,15 +120,17 @@ export default function BusBoard() {
           <strong className={statusValue}>{now.isSunday ? "Domingo" : "Dia normal"}</strong>
         </div>
         <div className={statusItem}>
-          <span className={statusLabel}>Em viagem</span>
-          <strong className={`${statusValue} ${trips.length ? "text-emerald-600" : ""}`}>
-            {trips.length ? `${trips.length} ônibus` : "Nenhum"}
+          <span className={statusLabel}>Temperatura</span>
+          <strong className={`${statusValue} ${weather && weather.temp > HOT_ABOVE ? "text-red-500" : ""}`}>
+            {weather ? `${Math.round(weather.temp)}°C` : "—"}
           </strong>
+          {weather && <span className="text-[.7rem] text-muted">sensação {Math.round(weather.feels)}°C</span>}
         </div>
       </div>
 
-      {(today || tomorrow) && (
+      {((weather && weather.temp > HOT_ABOVE) || today || tomorrow) && (
         <div className="mt-5 grid gap-3">
+          {weather && weather.temp > HOT_ABOVE && <HeatAlert temp={weather.temp} />}
           {today && <HolidayAlert when="Hoje" holiday={today} />}
           {tomorrow && <HolidayAlert when="Amanhã" holiday={tomorrow} />}
         </div>
@@ -93,33 +138,32 @@ export default function BusBoard() {
 
       <section className="mt-2 mb-5" id="mapa">
         <h2 className={sectionTitle}>Mapa da linha</h2>
-        <div
-          className="mb-3.5 flex items-center gap-3 rounded-xl border border-l-[6px] border-info-line border-l-blue-500 bg-info-bg px-4 py-3.5 text-info-text"
-          role="note"
-        >
-          <svg className="flex-none text-blue-500" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4M12 8h.01" />
-          </svg>
-          <p className="text-[.92rem]">
-            <b className="block text-[1.02rem]">Posição estimada pelo horário, não é GPS.</b> O ônibus no mapa é calculado a
-            partir do horário de saída e pode diferir da localização real.
-          </p>
-        </div>
+        <RouteModal />
         <div className="relative">
-          <BusMap trips={trips} />
-          <div className="absolute top-3 right-3 z-500 flex items-center gap-1.5 rounded-full bg-surface px-3 py-1.5 text-[.78rem] font-semibold text-ink shadow-md">
-            <i className={`inline-block size-2.25 rounded-full ${trips.length ? "dot-live bg-emerald-500" : "bg-slate-400"}`} />
-            {trips.length ? `${trips.length} em viagem` : "Sem ônibus em viagem"}
-          </div>
+          <BusMap />
         </div>
       </section>
 
       <h2 className={sectionTitle} id="horarios">
         Horários
       </h2>
+      <div className="-mt-2 mb-6 flex flex-wrap justify-center gap-2" role="group" aria-label="Filtrar por cidade">
+        {[null, ...cities.map((c) => c.name)].map((c) => (
+          <button
+            key={c ?? "todas"}
+            onClick={() => setCity(c)}
+            aria-pressed={city === c}
+            className={`cursor-pointer rounded-full border px-4 py-1.5 text-sm font-semibold transition ${
+              city === c ? "border-brand bg-brand text-white" : "border-line bg-surface text-ink hover:border-brand"
+            }`}
+          >
+            {c ?? "Todas"}
+          </button>
+        ))}
+      </div>
+      {visible.length === 0 && <p className="text-center text-muted">Nenhuma rota para esta cidade.</p>}
       <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-5">
-        {routes.map((r) => {
+        {visible.map((r) => {
           const next = nextDeparture(r.departures, now);
           const c = next && countdown(next, now);
           const soon = !!c && c.total <= 600;
