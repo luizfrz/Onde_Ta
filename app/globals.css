@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  --bg: #fff; --card: #fff; --text: #3e4555; --muted: #8d97ad; --line: #e3e8ee;
+  --blue: #0b5fb8; --hero: #0b5fb8; --green: #2cdd9b; --lime: #a3cd39;
+  --soon: #b45309; --soon-bg: #fff4d6; --next-bg: #eaf2fb;
+  --surface: #fff; --accent: #0b5fb8; --cur-bg: #e6fbf3; --shadow: rgba(120, 130, 140, .2);
+  --al-bg1: #fff7e0; --al-bg2: #fffbf0; --al-line: #f6d27a; --al-title: #7c4a03; --al-text: #8a5a12;
+  --info-bg: #e8f1fd; --info-line: #7fb0ec; --info-text: #0a3d78;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #0c141f; --card: #152130; --surface: #152130; --text: #e6edf5; --muted: #93a1b5; --line: #263447;
+  --hero: #0a3f77; --accent: #6db0ff; --next-bg: #12304f; --soon: #fbbf24; --soon-bg: #3a2c0a;
+  --cur-bg: #0f3a31; --shadow: rgba(0, 0, 0, .5);
+  --al-bg1: #3a2b08; --al-bg2: #2f2408; --al-line: #7a5a14; --al-title: #ffd98a; --al-text: #e8c277;
+  --info-bg: #10294a; --info-line: #2f6bb5; --info-text: #bcd9ff;
+  color-scheme: dark;
+}
+
+/* design tokens → utilities (bg-page, text-ink, border-line, ...) */
+@theme inline {
+  --font-sans: var(--font-montserrat), system-ui, sans-serif;
+  --color-page: var(--bg);
+  --color-card: var(--card);
+  --color-surface: var(--surface);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--blue);
+  --color-hero: var(--hero);
+  --color-mint: var(--green);
+  --color-lime: var(--lime);
+  --color-accent: var(--accent);
+  --color-soon: var(--soon);
+  --color-soon-bg: var(--soon-bg);
+  --color-next-bg: var(--next-bg);
+  --color-cur-bg: var(--cur-bg);
+  --color-al-bg1: var(--al-bg1);
+  --color-al-bg2: var(--al-bg2);
+  --color-al-line: var(--al-line);
+  --color-al-title: var(--al-title);
+  --color-al-text: var(--al-text);
+  --color-info-bg: var(--info-bg);
+  --color-info-line: var(--info-line);
+  --color-info-text: var(--info-text);
+}
+
+html { scroll-behavior: smooth; }
+
+/* Leaflet / animações que o Tailwind não cobre */
+.bus-pin { font-size: 26px; line-height: 34px; text-align: center; filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .5)); }
+.dot-live { box-shadow: 0 0 0 0 rgba(16, 185, 129, .6); animation: pulse 1.6s infinite; }
+@keyframes pulse { 70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+.track { background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .7) 0 6px, transparent 6px 12px); }
+.track::after { content: ""; position: absolute; right: -2px; top: -4px; border-left: 8px solid #fff; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+:root[data-theme="dark"] .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.9); }
+:root[data-theme="dark"] .leaflet-container { background: #1c2733; }
+:root[data-theme="dark"] .leaflet-tooltip,
+:root[data-theme="dark"] .leaflet-popup-content-wrapper,
+:root[data-theme="dark"] .leaflet-popup-tip { background: var(--card); color: var(--text); border-color: var(--line); }
