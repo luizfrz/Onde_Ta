@@ -22,7 +22,7 @@
 
 /* design tokens → utilities (bg-page, text-ink, border-line, ...) */
 @theme inline {
-  --font-sans: var(--font-montserrat), system-ui, sans-serif;
+  --font-sans: "Montserrat", system-ui, sans-serif;
   --color-page: var(--bg);
   --color-card: var(--card);
   --color-surface: var(--surface);

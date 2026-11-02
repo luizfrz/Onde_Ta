@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat } from "next/font/google";
+import "@fontsource/montserrat/latin-300.css";
+import "@fontsource/montserrat/latin-400.css";
+import "@fontsource/montserrat/latin-500.css";
+import "@fontsource/montserrat/latin-600.css";
+import "@fontsource/montserrat/latin-700.css";
 import "./globals.css";
-
-const montserrat = Montserrat({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-montserrat" });
 
 export const metadata: Metadata = {
   title: "Onde está a Topic?",
@@ -21,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className={`${montserrat.variable} bg-page font-sans leading-normal text-ink antialiased`}>{children}</body>
+      <body className="bg-page font-sans leading-normal text-ink antialiased">{children}</body>
     </html>
   );
 }
