@@ -26,6 +26,9 @@ export function getNow(date = new Date()): Now {
   };
 }
 
+export const toHHMM = (m: number) =>
+  `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+
 export const toMinutes = (time: string) => {
   const [h, m] = time.split(":").map(Number);
   return h * 60 + m;

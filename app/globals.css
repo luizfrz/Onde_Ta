@@ -58,3 +58,6 @@ html { scroll-behavior: smooth; }
 :root[data-theme="dark"] .leaflet-tooltip,
 :root[data-theme="dark"] .leaflet-popup-content-wrapper,
 :root[data-theme="dark"] .leaflet-popup-tip { background: var(--card); color: var(--text); border-color: var(--line); }
+
+.ce065-label { background: #0b5fb8; color: #fff; border: 2px solid #fff; font-weight: 700; }
+.ce065-label::before { display: none; }

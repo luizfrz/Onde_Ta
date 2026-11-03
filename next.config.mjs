@@ -5,6 +5,7 @@ const basePath = process.env.GITHUB_ACTIONS && repo ? `/${repo}` : "";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "export",
+  env: { NEXT_PUBLIC_BASE_PATH: basePath },
   basePath,
   assetPrefix: basePath || undefined,
   trailingSlash: true,

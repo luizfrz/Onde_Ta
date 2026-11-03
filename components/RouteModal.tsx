@@ -1,10 +1,21 @@
 "use client";
 
 import { useRef } from "react";
-import { line, totalKm } from "@/lib/line";
+import { legs, line, totalKm } from "@/lib/line";
 import { routes } from "@/lib/routes";
 
 const hm = (m: number) => (m >= 60 ? `${Math.floor(m / 60)}h${String(m % 60).padStart(2, "0")}` : `${m}min`);
+
+function LegInfo({ leg }: { leg: (typeof legs)[number] }) {
+  return (
+    <div className="mt-2.5 rounded-lg border border-dashed border-line px-3 py-2 text-[.8rem] text-muted">
+      <div className="font-semibold text-ink">
+        até {leg.to} · {leg.km} km · ~{hm(leg.min)}
+      </div>
+      <div className="mt-0.5">Via {leg.via.join(" → ")}</div>
+    </div>
+  );
+}
 
 export default function RouteModal() {
   const ref = useRef<HTMLDialogElement>(null);
@@ -37,14 +48,14 @@ export default function RouteModal() {
           </div>
 
           <p className="mt-3 rounded-lg bg-info-bg px-3.5 py-2.5 text-[.85rem] text-info-text">
-            <b>Rota estimada.</b> O traçado segue a estrada mais provável (cerca de {totalKm} km, ~{hm(total)} de Fortaleza a
+            <b>Rota estimada.</b> O traçado sai de Fortaleza pelas avenidas até Maranguape e segue pela rodovia <b>CE-065</b> até Guaramiranga (cerca de {totalKm} km, ~{hm(total)} de Fortaleza a
             Guaramiranga). O trajeto real do ônibus pode variar.
           </p>
 
           <h4 className="mt-5 mb-3 text-sm font-semibold tracking-[.08em] text-muted uppercase">Paradas</h4>
           <ol className="relative ml-2 border-l-2 border-dashed border-brand/40 pl-5">
             {line.map((s) => (
-              <li key={s.name} className="relative pb-4 last:pb-0">
+              <li key={s.name} className="relative pb-5 last:pb-0">
                 <span className="absolute top-1 -left-[1.82rem] size-3 rounded-full border-2 border-brand bg-surface" />
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <b>{s.name}</b>
@@ -53,11 +64,16 @@ export default function RouteModal() {
                 {s.spots.length > 0 && (
                   <ul className="mt-1.5 flex flex-wrap gap-1.5">
                     {s.spots.map((p) => (
-                      <li key={p} className="rounded-full bg-next-bg px-2.5 py-0.5 text-[.8rem]">
-                        {p}
+                      <li key={p.name} className="rounded-full bg-next-bg px-2.5 py-0.5 text-[.8rem]">
+                        {p.name}
+                        <span className="text-muted tabular-nums"> · {p.offset === 0 ? "saída" : `~${hm(p.offset)} de Fortaleza`}</span>
+                        {p.source === "osm" && <span className="text-muted"> · OSM</span>}
                       </li>
                     ))}
                   </ul>
+                )}
+                {legs.find((l) => l.from === s.name) && (
+                  <LegInfo leg={legs.find((l) => l.from === s.name)!} />
                 )}
               </li>
             ))}

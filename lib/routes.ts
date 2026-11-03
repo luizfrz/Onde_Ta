@@ -19,7 +19,7 @@ const t = (time: string, extra: Partial<Departure> = {}): Departure => ({ time, 
 export const routes: BusRoute[] = [
   {
     id: "palmacia-fortaleza",
-    fromOffset: 97,
+    fromOffset: 85,
     toOffset: 0,
     from: "Palmácia",
     to: "Fortaleza",
@@ -38,7 +38,7 @@ export const routes: BusRoute[] = [
   {
     id: "fortaleza-palmacia",
     fromOffset: 0,
-    toOffset: 97,
+    toOffset: 85,
     from: "Centro de Fortaleza",
     to: "Palmácia",
     departures: [
@@ -51,7 +51,7 @@ export const routes: BusRoute[] = [
   },
   {
     id: "guaramiranga-fortaleza",
-    fromOffset: 160,
+    fromOffset: 138,
     toOffset: 0,
     from: "Guaramiranga",
     to: "Fortaleza",
@@ -59,7 +59,7 @@ export const routes: BusRoute[] = [
   },
   {
     id: "pacoti-fortaleza",
-    fromOffset: 140,
+    fromOffset: 124,
     toOffset: 0,
     from: "Pacoti",
     to: "Fortaleza",
@@ -68,7 +68,7 @@ export const routes: BusRoute[] = [
   {
     id: "fortaleza-guaramiranga",
     fromOffset: 0,
-    toOffset: 160,
+    toOffset: 138,
     from: "Fortaleza",
     to: "Guaramiranga",
     departures: [t("05:00"), t("08:00"), t("12:40"), t("16:00")],

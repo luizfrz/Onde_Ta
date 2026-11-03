@@ -1,10 +1,12 @@
 import BusBoard from "@/components/BusBoard";
+import InstallButton from "@/components/InstallButton";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
     <>
       <div className="relative z-10 flex items-center justify-end px-6 py-2.5">
+        <InstallButton />
         <ThemeToggle />
       </div>
 

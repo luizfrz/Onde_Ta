@@ -1,6 +1,6 @@
 import type { Now } from "./time";
 
-export type Holiday = { month: number; day: number; name: string; optional?: boolean };
+export type Holiday = { month: number; day: number; name: string; optional?: boolean; city?: string };
 
 function easter(year: number): Date {
   const a = year % 19, b = Math.floor(year / 100), c = year % 100;
@@ -27,6 +27,7 @@ export function holidaysOf(year: number): Holiday[] {
     { month: 1, day: 1, name: "Confraternização Universal" },
     shift(e, -48, "Carnaval (ponto facultativo)", true),
     shift(e, -47, "Carnaval (ponto facultativo)", true),
+    { month: 3, day: 19, name: "Dia de São José (padroeiro do Ceará)" },
     { month: 3, day: 25, name: "Data Magna do Ceará" },
     shift(e, -2, "Sexta-feira Santa"),
     { month: 4, day: 21, name: "Tiradentes" },
@@ -39,18 +40,21 @@ export function holidaysOf(year: number): Holiday[] {
     { month: 11, day: 15, name: "Proclamação da República" },
     { month: 11, day: 20, name: "Consciência Negra" },
     { month: 12, day: 25, name: "Natal" },
+    // Municipais (fonte: calendários online; confirme em decreto da prefeitura)
+    { month: 1, day: 6, name: "Aniversário de Palmácia", city: "Palmácia" },
+    { month: 11, day: 8, name: "Aniversário de Pacoti", city: "Pacoti" },
   ];
 }
 
-export function holidayOn(year: number, month: number, day: number): Holiday | undefined {
-  return holidaysOf(year).find((h) => h.month === month && h.day === day);
+export function holidaysOn(year: number, month: number, day: number): Holiday[] {
+  return holidaysOf(year).filter((h) => h.month === month && h.day === day);
 }
 
-/** Feriado hoje e amanhã (fuso de Fortaleza). */
+/** Feriados hoje e amanhã (fuso de Fortaleza). */
 export function holidayAlerts(now: Now) {
   const t = new Date(Date.UTC(now.year, now.month - 1, now.day + 1));
   return {
-    today: holidayOn(now.year, now.month, now.day),
-    tomorrow: holidayOn(t.getUTCFullYear(), t.getUTCMonth() + 1, t.getUTCDate()),
+    today: holidaysOn(now.year, now.month, now.day),
+    tomorrow: holidaysOn(t.getUTCFullYear(), t.getUTCMonth() + 1, t.getUTCDate()),
   };
 }

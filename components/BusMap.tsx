@@ -17,12 +17,17 @@ export default function BusMap() {
       maxZoom: 18,
     }).addTo(m);
     const pts = PATH_LINE;
-    L.polyline(pts, { color: "#0f766e", weight: 4, opacity: 0.7, dashArray: "6 8" }).addTo(m);
+    L.polyline(pts, { color: "#fff", weight: 9, opacity: 0.9, lineCap: "round", lineJoin: "round" }).addTo(m);
+    L.polyline(pts, { color: "#0b5fb8", weight: 5, opacity: 0.95, lineCap: "round", lineJoin: "round" }).addTo(m);
     line.forEach((s) =>
       L.circleMarker([s.lat, s.lng], { radius: 7, color: "#0f766e", fillColor: "#fff", fillOpacity: 1, weight: 3 })
         .bindTooltip(s.name, { permanent: true, direction: "right", offset: [8, 0] })
         .addTo(m),
     );
+    // rótulo "CE-065" sobre o trecho Maranguape → Palmácia
+    const mid: [number, number] = [(line[1].lat + line[2].lat) / 2, (line[1].lng + line[2].lng) / 2];
+    const onRoad = pts.reduce((best, p) => (Math.hypot(p[0] - mid[0], p[1] - mid[1]) < Math.hypot(best[0] - mid[0], best[1] - mid[1]) ? p : best));
+    L.tooltip({ permanent: true, direction: "left", offset: [-8, 0], className: "ce065-label" }).setLatLng(onRoad).setContent("CE-065").addTo(m);
     m.fitBounds(L.latLngBounds(pts), { padding: [30, 30] });
     map.current = m;
     return () => {
