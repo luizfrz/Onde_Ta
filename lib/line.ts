@@ -16,6 +16,8 @@ export const line: Stop[] = [
     spots: [
       { name: "Centro de Fortaleza", offset: 0, source: "informado" },
       { name: "Aldeota", offset: 0, source: "informado" },
+      { name: "Rodoviária Eng. João Tomé (Av. Borges de Melo, 1630)", offset: 0, source: "informado" },
+      { name: "Ginásio Poliesportivo da Parangaba (embarque via Palmácia)", offset: 0, source: "informado" },
     ],
   },
   {

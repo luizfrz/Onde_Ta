@@ -14,15 +14,18 @@ export type Place = {
   hours: Hour[];
 };
 
-export type Weather = { fortaleza: Place; serra: Place };
+/** `local` = onde a pessoa está (ou Fortaleza, se a localização não foi liberada); `serra` = Pacoti/Guaramiranga. */
+export type Weather = { local: Place; serra: Place; located: boolean };
 
-// Fortaleza e Pacoti (referência da serra: Pacoti/Guaramiranga)
-const URL =
-  "https://api.open-meteo.com/v1/forecast?latitude=-3.73,-4.22&longitude=-38.53,-38.92" +
+const FORTALEZA: [number, number] = [-3.73, -38.53];
+const SERRA: [number, number] = [-4.22, -38.92];
+
+const url = ([la, lo]: [number, number]) =>
+  `https://api.open-meteo.com/v1/forecast?latitude=${la},${SERRA[0]}&longitude=${lo},${SERRA[1]}` +
   "&current=temperature_2m,apparent_temperature,weather_code,precipitation" +
   "&hourly=precipitation_probability,precipitation" +
   "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum" +
-  "&forecast_days=2&timezone=America%2FFortaleza";
+  "&forecast_days=2&timezone=auto";
 
 type Raw = {
   current: { time: string; temperature_2m: number; apparent_temperature: number; weather_code: number; precipitation: number };
@@ -55,17 +58,28 @@ function parse(r: Raw): Place {
 
 export function useWeather(): Weather | null {
   const [data, setData] = useState<Weather | null>(null);
+  const [coords, setCoords] = useState<[number, number] | null>(null);
+
+  // pede a localização uma vez; se negar, usa Fortaleza. Arredonda (~1 km) antes de enviar.
+  useEffect(() => {
+    if (!("geolocation" in navigator)) return;
+    navigator.geolocation.getCurrentPosition(
+      (p) => setCoords([Math.round(p.coords.latitude * 100) / 100, Math.round(p.coords.longitude * 100) / 100]),
+      () => {},
+      { timeout: 10_000, maximumAge: 10 * 60 * 1000 },
+    );
+  }, []);
 
   useEffect(() => {
     const load = () =>
-      fetch(URL)
+      fetch(url(coords ?? FORTALEZA))
         .then((r) => r.json())
-        .then((d: Raw[]) => setData({ fortaleza: parse(d[0]), serra: parse(d[1]) }))
+        .then((d: Raw[]) => setData({ local: parse(d[0]), serra: parse(d[1]), located: coords !== null }))
         .catch(() => setData(null));
     load();
     const id = setInterval(load, 10 * 60 * 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [coords]);
 
   return data;
 }
@@ -86,12 +100,7 @@ export function describe(code: number): { label: string; icon: string } {
 
 const WET = (code: number) => (code >= 51 && code <= 67) || (code >= 80 && code <= 99);
 
-/** Motivo para avisar sobre a serra (chuva ou neblina), ou null. */
+/** Retorna o aviso só quando está chovendo de fato na serra (Pacoti/Guaramiranga). */
 export function serraWarning(p: Place): string | null {
-  const next = p.hours.slice(0, 6);
-  const maxProb = Math.max(0, ...next.map((h) => h.prob));
-  if (WET(p.code) || p.precipNow > 0) return "Chove agora na serra";
-  if (p.code === 45 || p.code === 48) return "Há neblina na serra";
-  if (maxProb >= 60) return `Alta chance de chuva na serra nas próximas horas (${maxProb}%)`;
-  return null;
+  return WET(p.code) || p.precipNow > 0 ? "Chove agora na serra" : null;
 }

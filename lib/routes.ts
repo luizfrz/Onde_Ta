@@ -26,11 +26,13 @@ export const routes: BusRoute[] = [
     departures: [
       t("04:30"),
       t("05:30"),
+      t("05:40"),
       t("06:30", { noSunday: true }),
       t("09:30"),
       t("10:20"),
       t("12:00", { noSunday: true }),
       t("13:00"),
+      t("13:10"),
       t("14:40"),
       t("17:20"),
     ],
@@ -55,7 +57,7 @@ export const routes: BusRoute[] = [
     toOffset: 0,
     from: "Guaramiranga",
     to: "Fortaleza",
-    departures: [t("04:30"), t("09:00"), t("11:20"), t("16:00")],
+    departures: [t("04:30"), t("09:00"), t("11:20"), t("11:30"), t("16:00")],
   },
   {
     id: "pacoti-fortaleza",
@@ -63,7 +65,7 @@ export const routes: BusRoute[] = [
     toOffset: 0,
     from: "Pacoti",
     to: "Fortaleza",
-    departures: [t("05:00"), t("09:30"), t("12:00"), t("16:30")],
+    departures: [t("05:00"), t("09:30"), t("12:00"), t("12:20"), t("16:30")],
   },
   {
     id: "fortaleza-guaramiranga",
@@ -71,6 +73,19 @@ export const routes: BusRoute[] = [
     toOffset: 138,
     from: "Fortaleza",
     to: "Guaramiranga",
-    departures: [t("05:00"), t("08:00"), t("12:40"), t("16:00")],
+    departures: [
+      t("05:00"),
+      t("08:00", { note: "Rodoviária Eng. João Tomé" }),
+      t("12:40"),
+      t("16:00", { note: "Rodoviária Eng. João Tomé" }),
+    ],
+  },
+  {
+    id: "palmacia-guaramiranga",
+    fromOffset: 85,
+    toOffset: 138,
+    from: "Palmácia",
+    to: "Guaramiranga (via Pacoti)",
+    departures: [t("10:20"), t("18:10")],
   },
 ];

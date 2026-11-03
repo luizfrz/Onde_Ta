@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { holidayAlerts, type Holiday } from "@/lib/holidays";
 import { serraWarning, useWeather } from "@/lib/weather";
 import { routes } from "@/lib/routes";
-import { cities, line, routeCities } from "@/lib/line";
+import { cities, routeCities } from "@/lib/line";
 import RouteModal from "./RouteModal";
 import { countdown, formatCountdown, getNow, nextDeparture, runsToday, toHHMM, toMinutes, type Now } from "@/lib/time";
 
@@ -57,7 +57,7 @@ function RainAlert({ reason }: { reason: string }) {
           <strong className="text-[1.05rem] text-cyan-900 dark:text-cyan-200">{reason}</strong>
         </div>
         <p className="mt-1 text-[.88rem] text-cyan-800 dark:text-cyan-300">
-          Chuva e neblina deixam a CE-065 mais lenta em Pacoti e Guaramiranga. A Topic pode atrasar nesses trechos.
+          Chuva deixa a CE-065 mais lenta em Pacoti e Guaramiranga. A Topic pode atrasar nesses trechos.
         </p>
       </div>
     </div>
@@ -102,7 +102,7 @@ export default function BusBoard() {
   const [now, setNow] = useState<Now | null>(null);
   const [city, setCity] = useState<string | null>(null);
   const weatherData = useWeather();
-  const weather = weatherData?.fortaleza ?? null;
+  const weather = weatherData?.local ?? null;
 
   useEffect(() => {
     setNow(getNow());
@@ -135,7 +135,7 @@ export default function BusBoard() {
           <strong className={statusValue}>{now.isSunday ? "Domingo" : "Dia normal"}</strong>
         </div>
         <div className={statusItem}>
-          <span className={statusLabel}>Temperatura</span>
+          <span className={statusLabel}>{weatherData?.located ? "Temperatura · sua localização" : "Temperatura · Fortaleza"}</span>
           <strong className={`${statusValue} ${weather && weather.temp > HOT_ABOVE ? "text-red-500" : ""}`}>
             {weather ? `${Math.round(weather.temp)}°C` : "—"}
           </strong>
@@ -167,17 +167,15 @@ export default function BusBoard() {
       <h2 className={sectionTitle} id="horarios">
         Horários
       </h2>
-      <div
-        className="mb-6 flex items-center gap-3.5 rounded-xl border border-l-[6px] border-info-line border-l-blue-500 bg-info-bg px-4.5 py-4 text-info-text"
-        role="note"
-      >
-        <svg className="flex-none text-blue-500" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 16v-4M12 8h.01" />
-        </svg>
-        <p className="text-[.92rem]">
-          <b className="block text-[1.05rem]">Atenção!</b> Confira no grupo se de fato a Topic do horário está circulando.
-        </p>
+      <div className="mb-6 rounded-xl border border-info-line bg-info-bg px-4.5 py-4 text-center text-info-text" role="note">
+        <div className="flex items-center justify-center gap-2">
+          <svg className="flex-none text-blue-500" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4M12 8h.01" />
+          </svg>
+          <b className="text-[1.05rem]">Atenção!</b>
+        </div>
+        <p className="mt-1 text-[.92rem]">Confira no grupo se horário informado está circulando.</p>
       </div>
       <div className="-mt-2 mb-6 flex flex-wrap justify-center gap-2" role="group" aria-label="Filtrar por cidade">
         {[null, ...cities.map((c) => c.name)].map((c) => (
@@ -203,11 +201,6 @@ export default function BusBoard() {
           const ref = next ?? deps[0];
           const orig = r.departures[deps.indexOf(ref)];
           const dayHint = next ? "" : " (amanhã)";
-          const cityStop = city ? line.find((l) => l.name === city) : undefined;
-          const spotTimes = (cityStop?.spots ?? []).map((sp) => ({
-            name: sp.name,
-            time: toHHMM(toMinutes(orig.time) + Math.abs(sp.offset - r.fromOffset)),
-          }));
           const cityLine =
             cityOffset === null
               ? null
@@ -225,15 +218,6 @@ export default function BusBoard() {
               </header>
 
               {cityLine && <p className="mx-4.5 mt-3 text-[.82rem] font-semibold text-accent">{cityLine}</p>}
-              {spotTimes.length > 0 && (
-                <ul className="mx-4.5 mt-2 flex flex-wrap gap-1.5" aria-label={`Pontos de embarque em ${city}`}>
-                  {spotTimes.map((sp) => (
-                    <li key={sp.name} className="rounded-full bg-next-bg px-2.5 py-0.5 text-[.75rem]">
-                      {sp.name} <span className="text-muted tabular-nums">· ~{sp.time}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
 
               <div className={`mx-4.5 mt-4 mb-3 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 rounded-md p-3 ${soon ? "bg-soon-bg" : "bg-next-bg"}`}>
                 {next && c ? (
