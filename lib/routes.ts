@@ -39,7 +39,7 @@ export const routes: BusRoute[] = [
     id: "fortaleza-palmacia",
     fromOffset: 0,
     toOffset: 85,
-    from: "Centro de Fortaleza",
+    from: "Fortaleza",
     to: "Palmácia",
     departures: [
       t("06:40"),
