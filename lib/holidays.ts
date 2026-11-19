@@ -20,7 +20,6 @@ const shift = (base: Date, days: number, name: string, optional = false): Holida
   return { month: d.getUTCMonth() + 1, day: d.getUTCDate(), name, optional };
 };
 
-/** Feriados nacionais, estaduais (CE), de Fortaleza e pontos facultativos. */
 export function holidaysOf(year: number): Holiday[] {
   const e = easter(year);
   return [
@@ -40,7 +39,6 @@ export function holidaysOf(year: number): Holiday[] {
     { month: 11, day: 15, name: "Proclamação da República" },
     { month: 11, day: 20, name: "Consciência Negra" },
     { month: 12, day: 25, name: "Natal" },
-    // Municipais (fonte: calendários online; confirme em decreto da prefeitura)
     { month: 1, day: 6, name: "Aniversário de Palmácia", city: "Palmácia" },
     { month: 11, day: 8, name: "Aniversário de Pacoti", city: "Pacoti" },
   ];
@@ -50,7 +48,6 @@ export function holidaysOn(year: number, month: number, day: number): Holiday[] 
   return holidaysOf(year).filter((h) => h.month === month && h.day === day);
 }
 
-/** Feriados hoje e amanhã (fuso de Fortaleza). */
 export function holidayAlerts(now: Now) {
   const t = new Date(Date.UTC(now.year, now.month - 1, now.day + 1));
   return {

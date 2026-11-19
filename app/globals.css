@@ -20,7 +20,6 @@
   color-scheme: dark;
 }
 
-/* design tokens → utilities (bg-page, text-ink, border-line, ...) */
 @theme inline {
   --font-sans: "Montserrat", system-ui, sans-serif;
   --color-page: var(--bg);
@@ -50,7 +49,6 @@
 
 html { scroll-behavior: smooth; }
 
-/* Leaflet / animações que o Tailwind não cobre */
 .track { background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .7) 0 6px, transparent 6px 12px); }
 .track::after { content: ""; position: absolute; right: -2px; top: -4px; border-left: 8px solid #fff; border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
 :root[data-theme="dark"] .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.9) contrast(.9); }

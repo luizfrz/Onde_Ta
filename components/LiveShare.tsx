@@ -8,10 +8,6 @@ const BusMap = dynamic(() => import("./BusMap"), { ssr: false, loading: () => <d
 const PREFIX = "ondeta-";
 type Msg = { lat: number; lng: number; t: number };
 
-/**
- * "Veja onde estou": a localização vai direto de um aparelho para o outro (WebRTC via PeerJS), sem servidor nosso.
- * shortcut: só funciona com a aba de quem compartilha aberta e sem servidor TURN (algumas redes móveis bloqueiam), ao precisar de mais confiabilidade use um backend.
- */
 export default function LiveShare() {
   const ref = useRef<HTMLDialogElement>(null);
   const stop = useRef<() => void>(() => {});
@@ -66,7 +62,6 @@ export default function LiveShare() {
       (e) => setMsg(e.code === e.PERMISSION_DENIED ? "Permissão de localização negada." : "Não consegui obter a localização."),
       { enableHighAccuracy: true },
     );
-    // mantém a tela acesa, senão o navegador pausa o GPS
     const lock = navigator.wakeLock?.request("screen").catch(() => null);
     stop.current = () => {
       navigator.geolocation.clearWatch(watch);
@@ -90,7 +85,6 @@ export default function LiveShare() {
     stop.current = () => peer.destroy();
   };
 
-  // abre como espectador quando o link tem ?ao-vivo=
   useEffect(() => {
     const id = new URLSearchParams(location.search).get("ao-vivo");
     if (id && /^[\w-]{8,64}$/.test(id)) {
@@ -103,7 +97,7 @@ export default function LiveShare() {
   useEffect(() => {
     if (mode === "idle") return;
     ref.current?.showModal();
-    setOpen(true); // o mapa só monta com o diálogo aberto
+    setOpen(true);
     const id = setInterval(() => setT(Date.now()), 1000);
     return () => clearInterval(id);
   }, [mode]);
@@ -114,7 +108,6 @@ export default function LiveShare() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // clipboard bloqueado: o link continua selecionável
     }
   };
 

@@ -14,7 +14,6 @@ export type Place = {
   hours: Hour[];
 };
 
-/** `local` = onde a pessoa está (ou Fortaleza, se a localização não foi liberada); `serra` = Pacoti/Guaramiranga. */
 export type Weather = { local: Place; serra: Place; located: boolean };
 
 const FORTALEZA: [number, number] = [-3.73, -38.53];
@@ -60,7 +59,6 @@ export function useWeather(): Weather | null {
   const [data, setData] = useState<Weather | null>(null);
   const [coords, setCoords] = useState<[number, number] | null>(null);
 
-  // pede a localização uma vez; se negar, usa Fortaleza. Arredonda (~1 km) antes de enviar.
   useEffect(() => {
     if (!("geolocation" in navigator)) return;
     navigator.geolocation.getCurrentPosition(
@@ -84,7 +82,6 @@ export function useWeather(): Weather | null {
   return data;
 }
 
-/** Descrição e emoji do código WMO. */
 export function describe(code: number): { label: string; icon: string } {
   if (code === 0) return { label: "Céu limpo", icon: "☀️" };
   if (code === 1) return { label: "Poucas nuvens", icon: "🌤️" };
@@ -100,7 +97,6 @@ export function describe(code: number): { label: string; icon: string } {
 
 const WET = (code: number) => (code >= 51 && code <= 67) || (code >= 80 && code <= 99);
 
-/** Retorna o aviso só quando está chovendo de fato na serra (Pacoti/Guaramiranga). */
 export function serraWarning(p: Place): string | null {
   return WET(p.code) || p.precipNow > 0 ? "Chove agora na serra" : null;
 }

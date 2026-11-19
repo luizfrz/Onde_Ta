@@ -1,4 +1,3 @@
-// Service worker simples: abre o site offline com a última versão vista.
 const CACHE = "topic-v1";
 const SHELL = ["./", "./manifest.webmanifest", "./icon-192.png"];
 
@@ -18,10 +17,9 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   const url = new URL(req.url);
-  if (req.method !== "GET" || url.origin !== self.location.origin) return; // clima e mapa sempre vão à rede
+  if (req.method !== "GET" || url.origin !== self.location.origin) return;
 
   if (req.mode === "navigate") {
-    // páginas: rede primeiro, cache se estiver offline
     e.respondWith(
       fetch(req)
         .then((res) => {
@@ -34,7 +32,6 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // arquivos estáticos: usa o cache e atualiza em segundo plano
   e.respondWith(
     caches.match(req).then((hit) => {
       const net = fetch(req)

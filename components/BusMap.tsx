@@ -25,7 +25,6 @@ export default function BusMap({ bus }: { bus?: [number, number] }) {
         .bindTooltip(s.name, { permanent: true, direction: "right", offset: [8, 0] })
         .addTo(m),
     );
-    // rótulo "CE-065" sobre o trecho Maranguape → Palmácia
     const mid: [number, number] = [(line[1].lat + line[2].lat) / 2, (line[1].lng + line[2].lng) / 2];
     const onRoad = pts.reduce((best, p) => (Math.hypot(p[0] - mid[0], p[1] - mid[1]) < Math.hypot(best[0] - mid[0], best[1] - mid[1]) ? p : best));
     L.tooltip({ permanent: true, direction: "left", offset: [-8, 0], className: "ce065-label" }).setLatLng(onRoad).setContent("CE-065").addTo(m);
@@ -37,13 +36,12 @@ export default function BusMap({ bus }: { bus?: [number, number] }) {
     };
   }, []);
 
-  // marcador do ônibus (viagem compartilhada)
   useEffect(() => {
     if (!bus || !map.current) return;
     if (marker.current) marker.current.setLatLng(bus);
     else
       marker.current = L.marker(bus, {
-        icon: L.divIcon({ html: "🚌", className: "text-2xl leading-none drop-shadow", iconSize: [28, 28], iconAnchor: [14, 14] }),
+        icon: L.divIcon({ html: '<span class="block size-5 rounded-full border-[3px] border-white bg-blue-600 shadow-lg"></span>', className: "", iconSize: [20, 20], iconAnchor: [10, 10] }),
         zIndexOffset: 1000,
       }).addTo(map.current);
   }, [bus]);

@@ -3,10 +3,6 @@ import { PATH } from "./path";
 export type Spot = { name: string; offset: number; source: "informado" | "osm" };
 export type Stop = { name: string; lat: number; lng: number; offset: number; spots: Spot[] };
 
-/**
- * Paradas principais da linha Fortaleza → Guaramiranga.
- * `offset` = minutos estimados de viagem desde Fortaleza (tempos de rodovia do OpenStreetMap, aproximados).
- */
 export const line: Stop[] = [
   {
     name: "Fortaleza",
@@ -44,7 +40,6 @@ export const line: Stop[] = [
   },
 ];
 
-/** Trechos entre paradas, com as vias principais (OpenStreetMap). Valores aproximados. */
 export const legs = [
   {
     from: "Fortaleza",
@@ -66,7 +61,6 @@ const dist = (a: [number, number], b: [number, number]) =>
 const cum: number[] = [0];
 for (let i = 1; i < PATH.length; i++) cum.push(cum[i - 1] + dist(PATH[i - 1], PATH[i]));
 
-/** Distância (m) ao longo do trajeto do ponto mais próximo de cada parada. */
 const stopDist = line.map((s) => {
   let best = 0;
   let bd = Infinity;
@@ -92,7 +86,6 @@ function pointAtDistance(d: number): [number, number] {
   return PATH[PATH.length - 1];
 }
 
-/** Posição estimada (sobre a estrada) após `offset` minutos desde Fortaleza. */
 export function positionAt(offset: number): [number, number] {
   for (let i = 0; i < line.length - 1; i++) {
     const a = line[i];
@@ -105,10 +98,8 @@ export function positionAt(offset: number): [number, number] {
   return PATH[PATH.length - 1];
 }
 
-/** Cidades usadas no filtro (paradas principais da linha). */
 export const cities = line.map((s) => ({ name: s.name, offset: s.offset }));
 
-/** Cidades por onde a rota passa, entre a origem e o destino. */
 export function routeCities(fromOffset: number, toOffset: number) {
   const lo = Math.min(fromOffset, toOffset);
   const hi = Math.max(fromOffset, toOffset);

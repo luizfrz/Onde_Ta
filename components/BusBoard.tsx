@@ -204,7 +204,6 @@ export default function BusBoard() {
       {visible.length === 0 && <p className="text-center text-muted">Nenhuma rota para esta cidade.</p>}
       <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-5">
         {visible.map((r) => {
-          // com uma cidade escolhida, mostra o horário estimado de saída/passagem/chegada nela
           const delta = cityOffset === null ? 0 : Math.abs(cityOffset - r.fromOffset);
           const deps = delta === 0 ? r.departures : r.departures.map((d) => ({ ...d, time: toHHMM(toMinutes(d.time) + delta) }));
           const next = nextDeparture(deps, now);

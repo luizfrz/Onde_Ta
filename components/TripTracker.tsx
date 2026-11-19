@@ -8,9 +8,8 @@ import { getNow, toMinutes } from "@/lib/time";
 
 const BusMap = dynamic(() => import("./BusMap"), { ssr: false, loading: () => <div className="h-80 rounded-xl bg-card sm:h-105" /> });
 
-type Trip = { route: BusRoute; start: number }; // start = minutos absolutos (UTC-naive) da saída
+type Trip = { route: BusRoute; start: number };
 
-/** Lê ?viagem=&saida=&dia= do link compartilhado; ignora valores inválidos. */
 function readTrip(): Trip | null {
   const q = new URLSearchParams(location.search);
   const route = routes.find((r) => r.id === q.get("viagem"));
@@ -39,7 +38,7 @@ export default function TripTracker() {
   useEffect(() => {
     if (!trip) return;
     ref.current?.showModal();
-    setOpen(true); // o mapa só monta com o diálogo aberto (Leaflet precisa do tamanho)
+    setOpen(true);
     setT(nowAbs());
     const id = setInterval(() => setT(nowAbs()), 5000);
     return () => clearInterval(id);

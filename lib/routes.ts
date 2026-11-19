@@ -1,5 +1,5 @@
 export type Departure = {
-  time: string; // "HH:MM"
+  time: string;
   note?: string;
   noSunday?: boolean;
 };
@@ -8,7 +8,6 @@ export type BusRoute = {
   id: string;
   from: string;
   to: string;
-  /** Minutes from Fortaleza along the line (see lib/line.ts) */
   fromOffset: number;
   toOffset: number;
   departures: Departure[];

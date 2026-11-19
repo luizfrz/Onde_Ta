@@ -36,7 +36,6 @@ export const toMinutes = (time: string) => {
 
 export const runsToday = (d: Departure, isSunday: boolean) => !(isSunday && d.noSunday);
 
-/** Next departure today, or null if none are left. */
 export function nextDeparture(deps: Departure[], now: Now) {
   return (
     deps.find((d) => runsToday(d, now.isSunday) && toMinutes(d.time) * 60 >= now.minutes * 60 + now.seconds) ??
