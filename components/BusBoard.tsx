@@ -7,6 +7,7 @@ import { serraWarning, useWeather } from "@/lib/weather";
 import { routes } from "@/lib/routes";
 import { cities, routeCities } from "@/lib/line";
 import RouteModal from "./RouteModal";
+import ShareTrip from "./ShareTrip";
 import { countdown, formatCountdown, getNow, nextDeparture, runsToday, toHHMM, toMinutes, type Now } from "@/lib/time";
 
 const BusMap = dynamic(() => import("./BusMap"), {
@@ -70,7 +71,7 @@ function HolidayAlert({ when, holiday }: { when: "Hoje" | "Amanhã"; holiday: Ho
       className="flex items-start gap-3.5 rounded-xl border border-l-[6px] border-al-line border-l-amber-500 bg-gradient-to-r from-al-bg1 to-al-bg2 px-4.5 py-4 shadow-[0_4px_14px_rgba(245,158,11,.15)]"
       role="alert"
     >
-      <div className="grid size-11 flex-none place-items-center rounded-full bg-amber-500 text-white" aria-hidden="true">
+      <div className="grid size-11 flex-none place-items-center rounded-full bg-amber-500 text-white motion-safe:animate-pulse" aria-hidden="true">
         <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
           <path d="M12 9v4M12 17h.01" />
@@ -93,6 +94,11 @@ function HolidayAlert({ when, holiday }: { when: "Hoje" | "Amanhã"; holiday: Ho
             : "Pode haver mudança nos horários ou ônibus sem circular."}{" "}
           Confirme com a  empresa antes de sair. 
         </p>
+        {holiday.name === "Consciência Negra" && (
+          <p className="mt-1 text-[.88rem] font-semibold text-al-title">
+            ✊🏿 Dia da Consciência Negra: data de lembrar e honrar a luta e a resistência do povo negro!
+          </p>
+        )}
       </div>
     </div>
   );
@@ -169,7 +175,7 @@ export default function BusBoard() {
       </h2>
       <div className="mb-6 rounded-xl border border-info-line bg-info-bg px-4.5 py-4 text-center text-info-text" role="note">
         <div className="flex items-center justify-center gap-2">
-          <svg className="flex-none text-blue-500" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg className="flex-none text-blue-500 motion-safe:animate-pulse" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <circle cx="12" cy="12" r="10" />
             <path d="M12 16v-4M12 8h.01" />
           </svg>
@@ -210,7 +216,8 @@ export default function BusBoard() {
           const c = next && countdown(next, now);
           const soon = !!c && c.total <= 600;
           return (
-            <section key={r.id} className="flex flex-col overflow-hidden rounded-xl bg-card shadow-[0_8px_24px_var(--shadow)]">
+            <div key={r.id} className="flex flex-col gap-2.5">
+            <section className="flex flex-1 flex-col overflow-hidden rounded-xl bg-card shadow-[0_8px_24px_var(--shadow)]">
               <header className="flex items-center gap-2.5 bg-brand px-4.5 py-3.5 text-[.95rem] font-semibold text-white">
                 <span className="max-w-[40%] flex-none leading-tight">{r.from}</span>
                 <span className="track relative h-0.5 min-w-6 flex-1" aria-hidden="true" />
@@ -239,7 +246,7 @@ export default function BusBoard() {
                 )}
               </div>
 
-              <ul className="flex flex-wrap gap-2 px-4.5 pb-4.5">
+              <ul className="flex flex-wrap gap-2 px-4.5 pb-3">
                 {deps.map((d) => {
                   const off = !runsToday(d, now.isSunday);
                   const past = !off && toMinutes(d.time) * 60 < now.minutes * 60 + now.seconds;
@@ -259,6 +266,8 @@ export default function BusBoard() {
                 })}
               </ul>
             </section>
+            <ShareTrip r={r} time={orig.time} tomorrow={!next} />
+            </div>
           );
         })}
       </div>
