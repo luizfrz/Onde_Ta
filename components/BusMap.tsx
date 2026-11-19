@@ -5,9 +5,10 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { line, PATH_LINE } from "@/lib/line";
 
-export default function BusMap() {
+export default function BusMap({ bus }: { bus?: [number, number] }) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
+  const marker = useRef<L.Marker | null>(null);
 
   useEffect(() => {
     if (!el.current || map.current) return;
@@ -35,6 +36,17 @@ export default function BusMap() {
       map.current = null;
     };
   }, []);
+
+  // marcador do ônibus (viagem compartilhada)
+  useEffect(() => {
+    if (!bus || !map.current) return;
+    if (marker.current) marker.current.setLatLng(bus);
+    else
+      marker.current = L.marker(bus, {
+        icon: L.divIcon({ html: "🚌", className: "text-2xl leading-none drop-shadow", iconSize: [28, 28], iconAnchor: [14, 14] }),
+        zIndexOffset: 1000,
+      }).addTo(map.current);
+  }, [bus]);
 
   return <div ref={el} className="z-0 h-80 rounded-xl bg-card shadow-[0_8px_24px_var(--shadow)] sm:h-105" />;
 }

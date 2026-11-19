@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { line } from "@/lib/line";
 import type { BusRoute } from "@/lib/routes";
-import { toHHMM, toMinutes } from "@/lib/time";
+import { getNow, toHHMM, toMinutes } from "@/lib/time";
 
 export default function ShareTrip({ r, time, tomorrow }: { r: BusRoute; time: string; tomorrow: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -11,10 +11,15 @@ export default function ShareTrip({ r, time, tomorrow }: { r: BusRoute; time: st
 
   const spots = line.find((c) => c.name === r.from)?.spots.filter((s) => s.source === "informado").map((s) => s.name) ?? [];
   const arrival = toHHMM(toMinutes(time) + Math.abs(r.toOffset - r.fromOffset));
+  // link que abre o acompanhamento (TripTracker) para quem recebe
+  const n = getNow();
+  const dia = new Date(Date.UTC(n.year, n.month - 1, n.day + (tomorrow ? 1 : 0))).toISOString().slice(0, 10);
+  const link = `${location.origin}${location.pathname}?viagem=${r.id}&saida=${time}&dia=${dia}`;
   const text = [
     `🚌 Estou indo de ${r.from} para ${r.to}${tomorrow ? " amanhã" : ""}.`,
     `Saída: ${time} · chegada estimada: ~${arrival} (pode atrasar).`,
     spots.length ? `Embarque: ${spots.join(" / ")}.` : "",
+    `Acompanhe: ${link}`,
   ]
     .filter(Boolean)
     .join("\n");
