@@ -1,13 +1,13 @@
 import BusBoard from "@/components/BusBoard";
-import InstallButton from "@/components/InstallButton";
+import Menu from "@/components/Menu";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
     <>
-      <div className="relative z-10 flex items-center justify-end px-6 py-2.5">
-        <InstallButton />
+      <div className="relative z-10 flex items-center justify-end gap-3 px-6 py-2.5">
         <ThemeToggle />
+        <Menu />
       </div>
 
       <section className="relative min-h-70 overflow-hidden bg-hero px-4 pt-12 pb-14 text-white sm:px-6 sm:pt-18 sm:pb-28">
@@ -28,6 +28,8 @@ export default function Home() {
       <main className="mx-auto max-w-275 px-4 pb-6">
         <BusBoard />
       </main>
+
+      <footer className="px-4 pb-8 text-center text-sm text-muted">Desenvolvido por Luiz França</footer>
     </>
   );
 }

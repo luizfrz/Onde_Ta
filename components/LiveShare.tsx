@@ -118,7 +118,7 @@ export default function LiveShare() {
     <>
       <button
         onClick={() => setMode("share")}
-        className="mx-auto mb-3.5 flex cursor-pointer items-center gap-2 rounded-full border border-brand bg-surface px-4 py-2 text-sm font-semibold text-accent transition hover:bg-brand hover:text-white"
+        className="flex cursor-pointer items-center justify-center gap-2 rounded-full border border-brand bg-surface px-4 py-2 text-sm font-semibold text-accent transition hover:bg-brand hover:text-white"
       >
         Veja onde estou
       </button>
@@ -167,7 +167,7 @@ export default function LiveShare() {
               ) : (
                 <>
                   <p className="text-[.85rem] text-muted">
-                    Compartilha sua localização em tempo real direto com quem receber o link, sem passar por servidor. Só fica ativo enquanto esta aba estiver aberta, e você pode parar quando quiser.
+                    Aqui você compartilha com seu familiar, amigo ou namorado(a) para que saibam sua localização exata. Lembrando que nenhum dado seu é guardado.
                   </p>
                   <button onClick={startShare} className={`${btn} mt-3 bg-brand text-white hover:opacity-90`}>
                     Começar a compartilhar

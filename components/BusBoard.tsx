@@ -6,10 +6,8 @@ import { holidayAlerts, type Holiday } from "@/lib/holidays";
 import { serraWarning, useWeather } from "@/lib/weather";
 import { routes } from "@/lib/routes";
 import { cities, routeCities } from "@/lib/line";
-import RouteModal from "./RouteModal";
 import ShareTrip from "./ShareTrip";
 import TripTracker from "./TripTracker";
-import LiveShare from "./LiveShare";
 import { countdown, formatCountdown, getNow, nextDeparture, runsToday, toHHMM, toMinutes, type Now } from "@/lib/time";
 
 const BusMap = dynamic(() => import("./BusMap"), {
@@ -143,7 +141,7 @@ export default function BusBoard() {
           <strong className={statusValue}>{now.isSunday ? "Domingo" : "Dia normal"}</strong>
         </div>
         <div className={statusItem}>
-          <span className={statusLabel}>{weatherData?.located ? "Temperatura · sua localização" : "Temperatura · Fortaleza"}</span>
+          <span className={statusLabel}>{weatherData?.located}</span>
           <strong className={`${statusValue} ${weather && weather.temp > HOT_ABOVE ? "text-red-500" : ""}`}>
             {weather ? `${Math.round(weather.temp)}°C` : "—"}
           </strong>
@@ -162,9 +160,7 @@ export default function BusBoard() {
 
       <section className="mt-2 mb-5" id="mapa">
         <h2 className={sectionTitle}>Mapa da linha</h2>
-        <RouteModal />
         <TripTracker />
-        <LiveShare />
         <div className="relative">
           <BusMap />
           <div className="absolute top-3 right-3 z-500 flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 text-[.78rem] font-semibold text-ink shadow-md">
